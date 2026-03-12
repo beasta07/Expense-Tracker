@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { getLoggedInUserExpense, getUsersWithExpenses } from '@/app/actions/expenses'
+import { getLoggedInUserExpense } from '@/app/actions/expenses'
 import type { Expense, Users } from '@/types'
 
 const useExpenses = (refreshTrigger) => {

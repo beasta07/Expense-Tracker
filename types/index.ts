@@ -24,3 +24,12 @@ export type CategoryData = {
   value: number
 }
 
+export interface Budget{
+    id:number 
+  amount:number 
+  month:number 
+  year:number 
+  userId :number 
+  user: Users[] 
+
+}

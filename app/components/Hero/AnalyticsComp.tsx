@@ -48,7 +48,6 @@ const AnalyticsComp = ({ state }: { state: any }) => {
 
   },[expenses])
 
-  console.log('So this is the chart appropirate monthly data',monthlyData)
   if (loading) return (
     <div className="flex items-center justify-center py-32">
       <div className="w-6 h-6 border-2 border-green-800 border-t-transparent rounded-full animate-spin" />

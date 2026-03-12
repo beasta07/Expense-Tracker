@@ -1,4 +1,4 @@
-import { PieChart, Pie, Cell, Sector, Tooltip, Legend } from 'recharts'
+import { PieChart, Pie,  Sector, Tooltip, Legend } from 'recharts'
 import React from 'react'
 import { CategoryData } from '@/types'
 
@@ -28,7 +28,6 @@ const MyCustomPie = (props:any) => {
 
 
 const Piechart = ({ categoryData }: { categoryData: CategoryData[] }) => {
-    console.log(categoryData,'Category data in piechart')
   return (
 <PieChart width={400} height={400} style={{ overflow: 'visible' }}>
     <Pie

@@ -22,6 +22,12 @@ const Navbar = () => {
             Overview
           </a>
           <a
+            href="#budget"
+            className="text-xs uppercase tracking-widest text-gray-500 hover:text-green-800 transition-colors"
+          >
+            Budget
+          </a>
+          <a
             href="#transactions"
             className="text-xs uppercase tracking-widest text-gray-500 hover:text-green-800 transition-colors"
           >
@@ -29,9 +35,9 @@ const Navbar = () => {
           </a>
           <a
             href="#add-expense"
-            className="text-xs uppercase tracking-widest text-white bg-green-800 hover:bg-green-700 px-4 py-2 rounded-lg transition-colors"
+            className="text-xs uppercase flex items-center gap-2 tracking-widest text-white bg-green-800 hover:bg-green-700 px-4 py-2 rounded-lg transition-colors"
           >
-            + Add
+            <Plus /> Add
           </a>
           <button
             onClick={handleLogout}
