@@ -13,7 +13,7 @@ export async function getCurrentUser() {
   return await verifyToken(token); // returns { userId } or null
 }
 
-export async function signUp(prevData, formData) {
+export async function signUp(prevData:unknown , formData:FormData) {
   try {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
@@ -85,7 +85,7 @@ export async function signUp(prevData, formData) {
     };
   }
 }
-export async function logIn(prevData, formData) {
+export async function logIn(prevData:unknown , formData:FormData) {
   try {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;

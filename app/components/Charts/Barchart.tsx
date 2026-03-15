@@ -1,8 +1,11 @@
 'use client'
 
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-
-const TinyBarChart = ({ monthlyData }) => {
+type MonthlyData = {
+  month: string
+  amount: number
+}
+const TinyBarChart = ({ monthlyData }: { monthlyData: MonthlyData[] }) => {
   return (
     <div style={{ width: '100%', height: '300px' }}>
       <ResponsiveContainer width="100%" height="100%">

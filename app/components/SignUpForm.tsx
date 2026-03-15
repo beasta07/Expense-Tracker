@@ -8,13 +8,12 @@ export default function SignUpForm() {
   const [state, formAction, isPending] = useActionState(signUp, null)
   const router = useRouter()
 
-  useEffect(()=>{
-    if (state?.success && state?.token){
-        localStorage.setItem('jwt_token',state.token)
-        console.log(state.token)
-        router.push('/')
-    }
-  },[state,router])
+
+  useEffect(() => {
+  if (state?.success) {
+    router.push('/')
+  }
+}, [state, router])
 
   return (
     <>

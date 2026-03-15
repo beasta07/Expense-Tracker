@@ -4,16 +4,16 @@ import { verifyToken } from "@/lib/jwt";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 
-export async function setBudget(prevState, formData) {
+export async function setBudget(prevState:unknown, formData:FormData) {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("jwt_token")?.value;
-    const payload = await verifyToken(token);
+    const payload = await verifyToken(token as string);
 
     if (!payload) {
       return null;
     }
-    const amount = parseFloat(formData.get("amount"));
+    const amount = parseFloat(formData.get("amount") as string);
     const month = new Date().getMonth() + 1;
     const year = new Date().getFullYear();
     const userId = payload.userId
@@ -42,7 +42,7 @@ export async function getBudget() {
     const cookieStore = await cookies();
     const token = cookieStore.get("jwt_token")?.value;
 
-    const payload =await  verifyToken(token);
+    const payload =await  verifyToken(token as string) ;
     if (!payload) {
       return null;
     }

@@ -3,12 +3,16 @@
 import { useActionState, useState } from "react";
 import useExpenses from "../hooks/useExpenses";
 import { deleteExpense } from "../actions/expenses";
-import EditExpenseRow from "./EditExpenseRow";
+import EditExpenseRow from "../components/EditExpenseRow";
+import type { ExpenseFormState } from "@/types";
 
-export default function ExpensesComp({ state }) {
+export default function ExpensesComp({ state, expenseRefresh }: {
+  state: ExpenseFormState
+  expenseRefresh: number
+}) {
   const [deleteState, deleteAction, isPending] = useActionState(deleteExpense, null);
-  const [editId, setEditId] = useState(null);
-  const [editState, setEditState] = useState(null);
+  const [editId, setEditId] = useState<number | null>(null);
+  const [editState, setEditState] = useState<{ success: boolean } | null>(null);
 
   const handleEdit = (id: number) => setEditId(id);
   const handleEditSuccess = () => {
@@ -16,7 +20,7 @@ export default function ExpensesComp({ state }) {
     setEditState({ success: true });
   };
 
-  const refreshTrigger = state || deleteState || editState;
+  const refreshTrigger = state || deleteState || editState || expenseRefresh;
   const { expenses, loading, errors } = useExpenses(refreshTrigger);
 
   const total = expenses.reduce((acc, e) => acc + e.amount, 0)
@@ -35,8 +39,6 @@ export default function ExpensesComp({ state }) {
 
   return (
     <div className="px-8 md:px-24 py-16 bg-zinc-50 border-t border-gray-100">
-
-      {/* Section header */}
       <div className="mb-12">
         <p className="text-xs uppercase tracking-[0.3em] text-green-700 font-medium mb-3">
           Transaction History
@@ -44,7 +46,7 @@ export default function ExpensesComp({ state }) {
         <div className="flex items-end justify-between">
           <h2 className="text-4xl font-light text-gray-900">
             {expenses[0]?.user?.name
-              ? <><span className="text-green-800 italic">{expenses[0].user.name}</span>'s Expenses</>
+              ? <><span className="text-green-800 italic">{expenses[0].user.name}</span>&apos;s Expenses</>
               : 'Your Expenses'
             }
           </h2>
@@ -62,7 +64,6 @@ export default function ExpensesComp({ state }) {
         </div>
       ) : (
         <>
-          {/* Table */}
           <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white">
             <table className="w-full text-sm">
               <thead>
@@ -131,7 +132,6 @@ export default function ExpensesComp({ state }) {
             </table>
           </div>
 
-          {/* Footer total */}
           <div className="flex justify-end mt-6 pr-2">
             <div className="text-right">
               <p className="text-xs uppercase tracking-widest text-gray-400 mb-1">Total</p>

@@ -1,5 +1,4 @@
-import { PieChart, Pie,  Sector, Tooltip, Legend } from 'recharts'
-import React from 'react'
+import { PieChart, Pie, Sector, Tooltip, Legend, PieLabelRenderProps, SectorProps } from 'recharts'
 import { CategoryData } from '@/types'
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042']
@@ -21,11 +20,9 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
     </text>
   );
 };
-const MyCustomPie = (props:any) => {
-
+const MyCustomPie = (props: SectorProps & { index: number }) => {
   return <Sector {...props} fill={COLORS[props.index % COLORS.length]} />;
 };
-
 
 const Piechart = ({ categoryData }: { categoryData: CategoryData[] }) => {
   return (

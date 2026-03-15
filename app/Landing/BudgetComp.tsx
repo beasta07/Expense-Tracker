@@ -4,12 +4,13 @@ import { useActionState } from "react"
 import useExpenses from "../hooks/useExpenses"
 import useBudget from "../hooks/useBudget"
 import { setBudget } from "../actions/budget"
+import { ExpenseFormState } from "@/types"
 
-const BudgetComp =  ({state}) => {
-    const [postState,actionFunction,isPending] = useActionState(setBudget,null)
+const BudgetComp =  ({state}:{state:ExpenseFormState}) => {
+    const [postState,actionFunction] = useActionState(setBudget,null)
 
- const {budgetState,error,budgetStateLoading} = useBudget(postState)
-  const {expenses,loading,errors} =  useExpenses(state)
+ const {budgetState,budgetStateLoading} = useBudget(postState)
+  const {expenses} =  useExpenses(state)
 
    const monthNum = new Date().getMonth()
    const month = new Date().toLocaleString('default', { month: 'long' })

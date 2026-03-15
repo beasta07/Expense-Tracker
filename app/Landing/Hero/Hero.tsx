@@ -2,8 +2,8 @@
 
 import useExpenses from "@/app/hooks/useExpenses";
 
-const Hero = ({ state }) => {
-  const { expenses, loading, errors } = useExpenses(state);
+const Hero = ({ state }: { state: unknown }) => {
+  const { expenses, loading } = useExpenses(state);
 
   const dateCheckedExpense = expenses.filter(expense =>
     new Date(expense.date).getMonth() === new Date().getMonth() &&
@@ -38,7 +38,7 @@ const Hero = ({ state }) => {
             Hello, <span className="text-green-800 italic">{userName}.</span>
           </h1>
           <p className="mt-5 text-gray-400 text-lg font-light max-w-md">
-            Here's a snapshot of your financial activity this month.
+            Here is a snapshot of your financial activity this month.
           </p>
         </div>
 
@@ -46,7 +46,7 @@ const Hero = ({ state }) => {
         <div className="flex flex-col sm:flex-row gap-6">
 
           {/* This month */}
-          <div className="relative flex-[2] border border-gray-100 rounded-2xl p-8 bg-white overflow-hidden group hover:border-green-200 transition-colors duration-300">
+          <div className="relative flex-2 border border-gray-100 rounded-2xl p-8 bg-white overflow-hidden group hover:border-green-200 transition-colors duration-300">
             <div className="absolute top-0 left-0 w-1 h-full bg-green-800 rounded-l-2xl" />
             <p className="text-xs uppercase tracking-[0.25em] text-gray-400 font-medium mb-6">
               This Month

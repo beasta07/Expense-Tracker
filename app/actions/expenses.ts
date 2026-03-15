@@ -15,7 +15,7 @@ export async function getUsersWithExpenses() {
 export async function getLoggedInUserExpense() {
   const cookieStore = await cookies();
   const token = cookieStore.get("jwt_token")?.value;
-  const payload = await verifyToken(token);
+  const payload = await verifyToken(token as string);
 
   if (!payload) return null;
 
@@ -33,12 +33,12 @@ export async function getLoggedInUserExpense() {
   });
   return user;
 }
-export async function addExpense(prevState: any, formData: FormData) {
+export async function addExpense(prevState: unknown, formData: FormData) {
   try {
     // GET userId FROM COOKIE, NOT FORM
     const cookieStore = await cookies();
     const token = cookieStore.get("jwt_token")?.value;
-    const payload = await verifyToken(token);
+    const payload = await verifyToken(token as string);
 
     if (!payload) {
       return { success: false, error: "Not authenticated" };
@@ -67,22 +67,17 @@ export async function addExpense(prevState: any, formData: FormData) {
       expense,
     };
   } catch (error) {
-    return {
-      error,
-      name: prevState.name,
-      amount: prevState.amount,
-      description: prevState.description,
-      date: prevState.date,
-      category: prevState.category,
-      message: prevState.message,
-    };
-  }
+  return {
+    success: false,
+    error: String(error)
+  };
 }
-export async function deleteExpense(prevState: any, formData: FormData) {
+}
+export async function deleteExpense(prevState: unknown, formData: FormData) {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("jwt_token")?.value;
-    const payload = await verifyToken(token);
+    const payload = await verifyToken(token as string);
     const id = parseInt(formData.get("id") as string);
 
     const expense = await prisma.expense.findUnique({
@@ -112,12 +107,11 @@ export async function deleteExpense(prevState: any, formData: FormData) {
   } catch (err) {
     return {
       success: false,
-      message: "Failed to delete expense",
-      error: String(err),
+      error: "Failed to delete expense",
     };
   }
 }
-export async function editExpense(prevState: any, formData: FormData) {
+export async function editExpense(prevState: unknown, formData: FormData) {
   try {
     const id = parseInt(formData.get("id") as string);
     const amount = parseFloat(formData.get("amount") as string);
@@ -126,7 +120,7 @@ export async function editExpense(prevState: any, formData: FormData) {
     const date = formData.get("date") as string;
     const cookieStore = await cookies();
     const token = cookieStore.get("jwt_token")?.value;
-    const payload = await verifyToken(token);
+    const payload = await verifyToken(token as string);
 
     const expense = await prisma.expense.findUnique({
       where: {

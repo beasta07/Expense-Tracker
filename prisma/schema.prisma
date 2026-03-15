@@ -49,3 +49,10 @@ model Budget {
 
   @@unique([userId,month,year])
 }
+model WishlistItem{
+  id Int @id @default(autoincrement())
+  name String 
+  price Int 
+  userId Int
+  createdAt DateTime @default(now())
+}

@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { getLoggedInUserExpense } from '@/app/actions/expenses'
-import type { Expense, Users } from '@/types'
+import type { Expense } from '@/types'
 
-const useExpenses = (refreshTrigger) => {
+const useExpenses = (refreshTrigger:unknown) => {
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [loading, setLoading] = useState(true)
   const [errors, setErrors] = useState<Error | null>(null)
@@ -13,7 +13,7 @@ const useExpenses = (refreshTrigger) => {
     const fetchData = async () => {
       try {
         const data = await getLoggedInUserExpense()
-        setExpenses(data)
+        setExpenses(data ?? [])
       } catch (err) {
         console.error(err)
         setErrors(err as Error)

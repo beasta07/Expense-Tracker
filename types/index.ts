@@ -4,13 +4,14 @@ export interface Users{
     password: string,
     expenses : Expense[]
 }
-export interface Expense{
-    id: number ,
-    amount: number, 
-    description: string , 
-    date: Date , 
-   category: string | null;  // <- Also add null here
-  userId: number | null;  // <- And here
+export interface Expense {
+    id: number
+    amount: number
+    description: string
+    date: Date
+    category: string | null
+    user: { name: string; email: string } | null
+    userId: number | null
 }
 export interface Session{
     id: number ,
@@ -33,3 +34,8 @@ export interface Budget{
   user: Users[] 
 
 }
+export type ExpenseFormState = {
+  success: boolean
+  message?: string
+  error?: string
+} | null

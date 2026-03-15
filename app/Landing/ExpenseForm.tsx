@@ -1,7 +1,12 @@
 'use client'
 
-export function ExpenseForm({ state, actionFunction, isPending }) {
-  return (
+import { ExpenseFormState } from "@/types"
+
+export function ExpenseForm({ state, actionFunction, isPending }: { 
+  state: ExpenseFormState
+  actionFunction: (payload: FormData) => void
+  isPending: boolean 
+}) {  return (
     <div className="px-8 md:px-24 py-16 bg-white border-t border-gray-100">
 
       {/* Section header */}
