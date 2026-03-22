@@ -5,22 +5,22 @@ import useExpenses from "../hooks/useExpenses"
 import useBudget from "../hooks/useBudget"
 import { setBudget } from "../actions/budget"
 import { ExpenseFormState } from "@/types"
+import getNepaliMonthAndYear from "@/lib/nepaliDate"
 
 const BudgetComp =  ({state}:{state:ExpenseFormState}) => {
     const [postState,actionFunction] = useActionState(setBudget,null)
 
  const {budgetState,budgetStateLoading} = useBudget(postState)
   const {expenses} =  useExpenses(state)
+  
+  const {month,year,monthName}= getNepaliMonthAndYear(new Date())
 
-   const monthNum = new Date().getMonth()
-   const month = new Date().toLocaleString('default', { month: 'long' })
-  const year = new Date().getFullYear()
 
 const spent = expenses
-  .filter(expense => {
-    const date = new Date(expense.date)
-    return date.getMonth()  === monthNum && date.getFullYear() === year
-  })
+.filter(expense => {
+  const { month: expMonth, year: expYear } = getNepaliMonthAndYear(new Date(expense.date))
+  return expMonth === month && expYear === year
+})
   .reduce((acc, expense) => acc + expense.amount, 0)
  
 
@@ -90,7 +90,7 @@ const remaining = budgetState ? budgetState.amount - spent : 0
         Are you on <span className="italic text-green-600">track?</span>
       </h2>
       <p className="text-gray-400 text-sm mt-4 mb-12">
-        {month} {year} · <span className={`font-semibold ${(percentage <= 85) ? 'text-orange-300':' text-red-700'} `}> {getStatusText()} </span> 
+        {monthName} {year} · <span className={`font-semibold ${(percentage <= 85) ? 'text-orange-300':' text-red-700'} `}> {getStatusText()} </span> 
       </p>
 
       {/* Main content — two column */}

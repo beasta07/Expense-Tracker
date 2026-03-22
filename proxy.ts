@@ -15,5 +15,5 @@ export async function  proxy(request: NextRequest) {
   }
 }
 export const config = {
-  matcher: ["/"], //which routes to protect
-};
+  matcher: ['/']
+}

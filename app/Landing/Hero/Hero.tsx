@@ -1,22 +1,27 @@
 'use client'
 
 import useExpenses from "@/app/hooks/useExpenses";
+import getNepaliMonthAndYear from "@/lib/nepaliDate";
+import NepaliDate from "nepali-date-converter";
 
 const Hero = ({ state }: { state: unknown }) => {
   const { expenses, loading } = useExpenses(state);
+  
+const { month, year } = getNepaliMonthAndYear(new Date())
 
-  const dateCheckedExpense = expenses.filter(expense =>
-    new Date(expense.date).getMonth() === new Date().getMonth() &&
-    new Date(expense.date).getFullYear() === new Date().getFullYear()
-  )
+const dateCheckedExpense = expenses.filter(expense => {
+  const { month: expMonth, year: expYear } = getNepaliMonthAndYear(new Date(expense.date))
+  return expMonth === month && expYear === year
+})
 
   const total = dateCheckedExpense.reduce((acc, sum) => acc + sum.amount, 0)
   const dailyAverage = Math.round(total / 30)
   const userName = expenses[0]?.user?.name || 'there'
 
-  const monthName = new Date().toLocaleString('default', { month: 'long' })
-  const year = new Date().getFullYear()
+  // const monthName = new Date().toLocaleString('default', { month: 'long' })
 
+  const npDate = new NepaliDate(new Date())
+  const monthName = npDate.format('MMMM')
   return (
     <div className="relative bg-white overflow-hidden">
       {/* Subtle grid background */}

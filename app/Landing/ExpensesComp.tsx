@@ -5,6 +5,7 @@ import useExpenses from "../hooks/useExpenses";
 import { deleteExpense } from "../actions/expenses";
 import EditExpenseRow from "../components/EditExpenseRow";
 import type { ExpenseFormState } from "@/types";
+import getNepaliMonthAndYear from "@/lib/nepaliDate";
 
 export default function ExpensesComp({ state, expenseRefresh }: {
   state: ExpenseFormState
@@ -24,6 +25,12 @@ export default function ExpensesComp({ state, expenseRefresh }: {
   const { expenses, loading, errors } = useExpenses(refreshTrigger);
 
   const total = expenses.reduce((acc, e) => acc + e.amount, 0)
+
+const formatNepaliDate = (date: Date) => {
+  const { monthName, year } = getNepaliMonthAndYear(date)
+  return `${monthName} ${year}`
+}
+
 
   if (loading) return (
     <div className="flex items-center justify-center py-32">
@@ -93,11 +100,7 @@ export default function ExpensesComp({ state, expenseRefresh }: {
                       </td>
                       <td className="px-6 py-4 text-gray-600">{expense.description}</td>
                       <td className="px-6 py-4 text-gray-400 text-xs">
-                        {new Date(expense.date).toLocaleDateString('en-US', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric'
-                        })}
+                      {formatNepaliDate(new Date(expense.date))}
                       </td>
                       <td className="px-6 py-4">
                         <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-100">

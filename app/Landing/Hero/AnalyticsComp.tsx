@@ -2,8 +2,9 @@
 
 import useExpenses from "@/app/hooks/useExpenses";
 import PieChartComp from "../../components/Charts/Piechart";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Barchart from "../../components/Charts/Barchart";
+import getNepaliMonthAndYear from "@/lib/nepaliDate";
 
 type CategoryData = {
   name: string;
@@ -12,10 +13,22 @@ type CategoryData = {
 
 const AnalyticsComp = ({ state }: { state: unknown }) => {
   const { expenses, loading } = useExpenses(state);
+const [selectedMonth, setSelectedMonth] = useState<string>('all')
+const uniqueMonths = [...new Set(expenses.map(expense => {
+  const { monthName,month, year } = getNepaliMonthAndYear(new Date(expense.date))
 
+return `${monthName}-${month}-${year}`  
+}))]
+const filteredExpenses = selectedMonth === 'all' 
+  ? expenses 
+  : expenses.filter(expense => {
+      const { monthName, month, year } = getNepaliMonthAndYear(new Date(expense.date))
+      return `${monthName}-${month}-${year}` === selectedMonth
+    })
+console.log(uniqueMonths,'here are the unique months')
   //PIE CHART DATA
   const categoryData: CategoryData[] = useMemo(() => {
-    const totals = expenses.reduce((acc: Record<string, number>, expense) => {
+    const totals = filteredExpenses .reduce((acc: Record<string, number>, expense) => {
       if (acc[expense.category ?? "Uncategorized"]) {
         acc[expense.category ?? "Uncategorized"] += expense.amount;
       } else {
@@ -24,21 +37,20 @@ const AnalyticsComp = ({ state }: { state: unknown }) => {
       return acc;
     }, {});
     return Object.entries(totals).map(([name, value]) => ({ name, value }));
-  }, [expenses]);
+  }, [filteredExpenses]);
 
   const topCategory = categoryData.sort((a, b) => b.value - a.value)[0];
   const totalSpend = categoryData.reduce((acc, d) => acc + d.value, 0);
 
   //BAR CHAT DATA
   const monthlyData = useMemo(() => {
-    const monthly = expenses.reduce((acc: Record<string, number>, expense) => {
-      const month = new Date(expense.date).toLocaleString("default", {
-        month: "short",
-      });
-      if (acc[month]) {
-        acc[month] += expense.amount;
+    const monthly = filteredExpenses.reduce((acc: Record<string, number>, expense) => {
+   
+      const {monthName} = getNepaliMonthAndYear(new Date(expense.date))
+      if (acc[monthName]) {
+        acc[monthName] += expense.amount;
       } else {
-        acc[month] = expense.amount;
+        acc[monthName] = expense.amount;
       }
       return acc;
     }, {});
@@ -46,7 +58,7 @@ const AnalyticsComp = ({ state }: { state: unknown }) => {
       month,
       amount: amount as number,
     }));
-  }, [expenses]);
+  }, [filteredExpenses]);
 
   if (loading)
     return (
@@ -58,6 +70,7 @@ const AnalyticsComp = ({ state }: { state: unknown }) => {
   return (
     <section className="bg-white px-8 md:px-24 py-24 border-t border-gray-100">
       {/* Section Header */}
+      <div className="flex justify-between">
       <div className="mb-20">
         <p className="text-xs uppercase tracking-[0.3em] text-green-700 font-medium mb-3">
           Spending Overview
@@ -67,6 +80,22 @@ const AnalyticsComp = ({ state }: { state: unknown }) => {
           <span className="text-green-800 italic">money go?</span>
         </h2>
         <div className="w-12 h-px bg-green-800 mt-6" />
+      </div>
+<div>
+              <select 
+  value={selectedMonth} 
+  className="text-black border  border-gray-300 p-3 rounded-2xl"
+  onChange={(e) => setSelectedMonth(e.target.value)}
+>
+  <option value="all">All Time</option>
+{uniqueMonths.map(month => {
+  const [monthName, , year] = month.split('-') // skip the middle number
+  return (
+    <option key={month} value={month}>{monthName} {year}</option>
+  )
+})}
+</select>
+</div>
       </div>
 
       {/* Pie Chart Section */}
@@ -123,6 +152,7 @@ const AnalyticsComp = ({ state }: { state: unknown }) => {
         {/* Right — Chart */}
         <div className="lg:w-[60%] flex justify-center">
           <div className="relative">
+
             {/* Decorative background circle */}
             <div className="absolute inset-0 rounded-full bg-green-50 opacity-40 scale-110 blur-2xl" />
             <PieChartComp categoryData={categoryData} />

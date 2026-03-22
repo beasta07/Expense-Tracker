@@ -1,6 +1,7 @@
 "use server";
 
 import { verifyToken } from "@/lib/jwt";
+import getNepaliMonthAndYear from "@/lib/nepaliDate";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 
@@ -14,8 +15,7 @@ export async function setBudget(prevState:unknown, formData:FormData) {
       return null;
     }
     const amount = parseFloat(formData.get("amount") as string);
-    const month = new Date().getMonth() + 1;
-    const year = new Date().getFullYear();
+    const {month,year}=getNepaliMonthAndYear(new Date())
     const userId = payload.userId
     const budget = await prisma.budget.upsert({
       where: { userId_month_year: { userId, month, year } },
@@ -47,8 +47,7 @@ export async function getBudget() {
       return null;
     }
     const userId = payload.userId;
-    const month = new Date().getMonth() + 1;
-    const year = new Date().getFullYear();
+    const {month,year}= getNepaliMonthAndYear(new Date())
 
     const budget = await prisma.budget.findUnique({
       where:{userId_month_year: 

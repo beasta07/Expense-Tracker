@@ -70,7 +70,7 @@ export function ExpenseForm({ state, actionFunction, isPending }: {
               <option value="Food">Food</option>
               <option value="Transport">Transport</option>
               <option value="Entertainment">Entertainment</option>
-              <option value="Saving">Saving</option>
+              <option value="Savings">Savings</option>
               <option value="Essentials">Essentials</option>
             </select>
           </div>
