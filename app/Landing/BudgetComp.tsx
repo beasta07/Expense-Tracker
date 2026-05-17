@@ -1,171 +1,90 @@
-'use client'
+"use client";
 
-import { useActionState } from "react"
-import useExpenses from "../hooks/useExpenses"
-import useBudget from "../hooks/useBudget"
-import { setBudget } from "../actions/budget"
-import { ExpenseFormState } from "@/types"
-import getNepaliMonthAndYear from "@/lib/nepaliDate"
+import { formatCurrency, getElapsedDaysInCurrentBsMonth } from "@/lib/editorial";
+import { formatNepaliMonthYear } from "@/lib/nepaliDate";
+import { Budget, ExpenseFormState } from "@/types";
 
-const BudgetComp =  ({state}:{state:ExpenseFormState}) => {
-    const [postState,actionFunction] = useActionState(setBudget,null)
+const BudgetComp = ({
+  budgetState,
+  budgetStateLoading,
+  spent,
+  budgetFormState,
+  actionFunction,
+  isPending,
+}: {
+  budgetState: Budget | null;
+  budgetStateLoading: boolean;
+  spent: number;
+  budgetFormState: ExpenseFormState;
+  actionFunction: (payload: FormData) => void;
+  isPending: boolean;
+}) => {
+  const percentUsed = budgetState ? (spent / budgetState.amount) * 100 : 0;
+  const remaining = budgetState ? budgetState.amount - spent : 0;
+  const monthLabel = formatNepaliMonthYear(new Date());
+  const elapsedDays = getElapsedDaysInCurrentBsMonth();
+  const meterWidth = budgetState ? Math.min(percentUsed, 100) : 0;
 
- const {budgetState,budgetStateLoading} = useBudget(postState)
-  const {expenses} =  useExpenses(state)
-  
-  const {month,year,monthName}= getNepaliMonthAndYear(new Date())
-
-
-const spent = expenses
-.filter(expense => {
-  const { month: expMonth, year: expYear } = getNepaliMonthAndYear(new Date(expense.date))
-  return expMonth === month && expYear === year
-})
-  .reduce((acc, expense) => acc + expense.amount, 0)
- 
-
-  console.log('This is how the the budget data is looking ',postState)
-  
-  const getBarColor = () => {
-    if (percentage <= 60) return '#1a6b3c'
-    if (percentage <= 85) return '#d97706'
-    return '#dc2626'
+  if (budgetStateLoading) {
+    return <section id="budget-report" className="py-5 text-[12px]" style={{ fontFamily: "var(--font-jetbrains)" }}>Loading budget report...</section>;
   }
 
-  const getStatusText = () => {
-    if (percentage <= 60) return 'On track'
-    if (percentage <= 85) return 'Approaching limit'
-    return 'Over budget'
-  }
-  if (budgetStateLoading) return <div>Fetching budget data</div>
-const percentage = budgetState ? Math.min((spent / budgetState.amount) * 100, 100) : 0
-const remaining = budgetState ? budgetState.amount - spent : 0
-  
   return (
-   <>
+    <section id="budget-report" className="section-enter py-5" style={{ animationDelay: "200ms" }}>
+      <div className="kicker mb-1">Fiscal Desk · Budget Report</div>
+      <hr className="rule-thick mb-2" />
 
-   {(!budgetState)?   
-    <section className="bg-white px-8 md:px-24 py-24 border-t border-gray-100">
-      {/* Section label */}
-      <p className="text-xs uppercase tracking-[0.3em] text-green-700 font-medium mb-3">
-        Monthly budget
-      </p>
+      {budgetState ? (
+        <>
+          <h2 className="headline mb-1 text-[22px]">
+            {remaining >= 0
+              ? `${monthLabel} Holds A Surplus — ${formatCurrency(remaining)} Unspent`
+              : `Budget Breach: Spending Exceeds Limit By ${formatCurrency(Math.abs(remaining))}`}
+          </h2>
+          <div className="byline mb-3">
+            Budget set at {formatCurrency(budgetState.amount)} · {elapsedDays} days filed this edition
+          </div>
 
-      {/* Heading */}
-      <h2 className="text-5xl font-light text-gray-900 leading-tight mb-2">
-        No budget set for <span className="italic text-green-600">{month}.</span>
-      </h2>
-      <p className="text-gray-400 text-sm mb-12">
-        Set a budget to start tracking your spending this month.
-      </p>
-      {/* Form */}
-          <form action={actionFunction}>
-      <div className="flex gap-3 max-w-sm">
-        <div className="flex items-center border-b border-gray-300 flex-1 pb-1">
-          <span className="text-gray-400 text-sm mr-2">Rs</span>
-          <input
-            type="number"
-            name="amount"
-            placeholder="0.00"
-            className="flex-1 text-sm text-gray-800 outline-none bg-transparent placeholder-gray-300"
-          />
+          <div className="mb-1 h-5 border border-[var(--color-ink)]">
+            <div
+              className="h-full"
+              style={{
+                width: `${meterWidth}%`,
+                background: percentUsed > 100 ? "var(--color-accent)" : "var(--color-ink)",
+              }}
+            />
+          </div>
+          <div className="mb-4 flex justify-between text-[11px] text-[var(--color-ink-light)]" style={{ fontFamily: "var(--font-jetbrains)" }}>
+            <span>{formatCurrency(0)}</span>
+            <span className={percentUsed > 100 ? "font-bold text-[var(--color-accent)]" : ""}>{percentUsed.toFixed(1)}% used</span>
+            <span>{formatCurrency(budgetState.amount)}</span>
+          </div>
+        </>
+      ) : (
+        <>
+          <h2 className="headline mb-1 text-[22px]">No Budget Has Yet Been Declared For {monthLabel}</h2>
+          <div className="body-copy mb-4">
+            File a monthly ceiling below to begin publishing a clearer fiscal report.
+          </div>
+        </>
+      )}
+
+      <form action={actionFunction} className="max-w-[320px]">
+        <label className="kicker mb-1 block">{budgetState ? "Revise Budget" : "Declare Budget"}</label>
+        <div className="flex gap-2">
+          <input type="number" name="amount" placeholder="0" className="paper-input" />
+          <button type="submit" disabled={isPending} className="paper-button min-w-[150px]">
+            {isPending ? "Submitting..." : budgetState ? "Update Budget" : "Set Budget"}
+          </button>
         </div>
-        <button type="submit" className="bg-green-600 hover:bg-green-700 text-white text-xs tracking-widest uppercase px-6 py-2 transition-colors">
-          Set budget
-        </button>
-      </div>
-               {postState?.message}
-
-          </form>
+        {budgetFormState?.message && (
+          <p className="mt-2 text-[11px] text-[var(--color-ink-light)]" style={{ fontFamily: "var(--font-jetbrains)" }}>
+            {budgetFormState.message}
+          </p>
+        )}
+      </form>
     </section>
-  :
-    <section className="bg-white px-8 md:px-24 py-24  border-t border-gray-100">
-      {/* Section label */}
-      <p className="text-xs uppercase tracking-[0.3em] text-green-700 font-medium mb-3">
-        Monthly budget
-      </p>
+  );
+};
 
-      {/* Heading */}
-      <h2 className="text-5xl font-light text-gray-900 leading-tight">
-        Are you on <span className="italic text-green-600">track?</span>
-      </h2>
-      <p className="text-gray-400 text-sm mt-4 mb-12">
-        {monthName} {year} · <span className={`font-semibold ${(percentage <= 85) ? 'text-orange-300':' text-red-700'} `}> {getStatusText()} </span> 
-      </p>
-
-      {/* Main content — two column */}
-      <div className="grid grid-cols-2 gap-16 mb-12">
-        {/* Left — numbers */}
-        <div>
-          {/* Spent */}
-          <div className="mb-8">
-            <p className="text-xs tracking-widest uppercase text-gray-400 mb-1">Spent</p>
-            <p className="text-5xl font-light text-gray-900 leading-tight">
-              Rs <span className="text-green-600">{spent.toLocaleString()}</span>
-            </p>
-          </div>
-
-          {/* Divider */}
-          <div className="w-12 h-px bg-gray-200 mb-8" />
-
-          {/* budgetState + Remaining */}
-          <div className="flex gap-12">
-            <div>
-              <p className="text-xs tracking-widest uppercase text-gray-400 mb-1">budget</p>
-              <p className="text-2xl font-semibold text-gray-700">Rs {budgetState.amount}</p>
-            </div>
-            <div>
-              <p className="text-xs tracking-widest uppercase text-gray-400 mb-1">Remaining</p>
-              <p className="text-2xl font-semibold text-gray-700">Rs {remaining.toLocaleString()}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Right — progress + form */}
-        <div className="flex flex-col justify-between">
-          {/* Progress bar */}
-          <div>
-            <div className="flex justify-between text-xs text-gray-400 mb-2">
-              <span>0</span>
-              <span>{percentage.toFixed(1)}% used</span>
-              <span>Rs {budgetState.amount.toLocaleString()}</span>
-            </div>
-            <div className="w-full bg-gray-100 h-2 rounded-full mb-1">
-              <div
-                className="h-2 rounded-full transition-all duration-700"
-                style={{ width: `${percentage}%`, backgroundColor: getBarColor() }}
-              />
-            </div>
-          </div>
-
-          {/* Form */}
-          <form action={actionFunction}>
-            <p className="text-xs tracking-widest uppercase text-gray-400 mb-3">
-              Update budget
-            </p>
-            <div className="flex gap-3">
-              <div className="flex items-center border-b border-gray-300 flex-1 pb-1">
-                <span className="text-gray-400 text-sm mr-2">Rs</span>
-                <input
-                  type="number"
-                  name="amount"
-                  placeholder="0.00"
-                  className="flex-1 text-sm text-gray-800 outline-none bg-transparent placeholder-gray-300"
-                />
-              </div>
-              <button className="bg-green-600 hover:bg-green-700 text-white text-xs tracking-widest uppercase px-6 py-2 transition-colors">
-                Update
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </section>
-   }
-   </>
-
-
-  )
-}
-
-export default BudgetComp
+export default BudgetComp;

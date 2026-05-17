@@ -1,62 +1,40 @@
-'use client'
+"use client";
 
-import { useActionState, useEffect } from 'react'
-import { signUp } from '@/app/actions/auth'
-import { useRouter } from 'next/navigation'  // ✅ Correct!
+import { useActionState, useEffect } from "react";
+import { signUp } from "@/app/actions/auth";
+import { useRouter } from "next/navigation";
 
 export default function SignUpForm() {
-  const [state, formAction, isPending] = useActionState(signUp, null)
-  const router = useRouter()
-
+  const [state, formAction, isPending] = useActionState(signUp, null);
+  const router = useRouter();
 
   useEffect(() => {
-  if (state?.success) {
-    router.push('/')
-  }
-}, [state, router])
+    if (state?.success) router.push("/");
+  }, [state, router]);
 
   return (
     <>
-      {state?.success && (
-        <p className="text-green-600 mb-4">Sign up successful! Redirecting...</p>
+      {state?.error && (
+        <div className="mb-4 border border-[var(--color-accent)] bg-[var(--color-accent-bg)] px-3 py-2 text-[12px] text-[var(--color-accent)]" style={{ fontFamily: "var(--font-jetbrains)" }}>
+          {state.error}
+        </div>
       )}
-      {state?.error && <p className="text-red-600 mb-4">{state.error}</p>}
 
       <form action={formAction} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Email
-          </label>
-          <input
-            type="email"
-            name="email"
-            placeholder="john@example.com"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-            required
-          />
+          <label className="kicker mb-1 block">Email</label>
+          <input type="email" name="email" placeholder="john@example.com" className="paper-input" required />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Password
-          </label>
-          <input
-            type="password"
-            name="password"
-            placeholder="••••••••"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-            required
-          />
+          <label className="kicker mb-1 block">Password</label>
+          <input type="password" name="password" placeholder="••••••••" className="paper-input" required />
         </div>
 
-        <button
-          type="submit"
-          disabled={isPending}
-          className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 rounded-lg transition disabled:opacity-50"
-        >
-          {isPending ? 'Signing up...' : 'Sign Up'}
+        <button type="submit" disabled={isPending} className="paper-button w-full">
+          {isPending ? "Signing up..." : "Sign Up"}
         </button>
       </form>
     </>
-  )
+  );
 }

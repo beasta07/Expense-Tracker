@@ -1,94 +1,67 @@
-'use client'
+"use client";
 
-import { purchaseWishlistItem } from '@/app/actions/wishlist'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useActionState, useEffect } from 'react'
-type WishlistItem = {
-  id: number
-  name: string
-  price: number
-  userId: number
-  createdAt: Date
-}
+import { CATEGORY_OPTIONS } from "@/lib/editorial";
+import { purchaseWishlistItem } from "@/app/actions/wishlist";
+import { useActionState, useEffect } from "react";
+import { WishlistItem } from "@/types";
 
-const PurchaseModal = ({ item, onClose, onSuccess }: { 
-  item: WishlistItem
-  onClose: () => void
-  onSuccess: () => void
+const PurchaseModal = ({
+  item,
+  onClose,
+  onSuccess,
+}: {
+  item: WishlistItem;
+  onClose: () => void;
+  onSuccess: () => void;
 }) => {
-   const [state, actionFunction, isPending] = useActionState(purchaseWishlistItem, null)
+  const [state, actionFunction, isPending] = useActionState(purchaseWishlistItem, null);
 
-  useEffect(()=>{
-    if(state?.success === true){
-        
-        onClose()
-        onSuccess()
-    } 
-  },[state,onClose,onSuccess])
-
+  useEffect(() => {
+    if (state?.success) {
+      onSuccess();
+    }
+  }, [state, onSuccess]);
 
   return (
-    <AnimatePresence>
-      {item && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
-          onClick={onClose}
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.25 }}
-            className="bg-white px-10 py-10 max-w-md w-full mx-4"
-            onClick={e => e.stopPropagation()}
-          >
-            <p className="text-xs uppercase tracking-[0.3em] text-green-700 font-medium mb-3">
-              Confirm purchase
-            </p>
-            <h2 className="text-3xl font-light text-gray-900 mb-1">{item.name}</h2>
-            <p className="text-green-600 text-sm mb-8">Rs {item.price.toLocaleString()}</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 px-4" onClick={onClose}>
+      <div
+        className="w-full max-w-md border border-[var(--color-ink)] bg-white p-6"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="kicker mb-1">Confirm Purchase</div>
+        <h2 className="headline mb-1 text-[22px]">{item.name}</h2>
+        <div className="byline mb-4">रू {Math.round(item.price).toLocaleString()}</div>
 
-            <form action={actionFunction}>
-              <input type="hidden" name="id" value={item.id} />
+        <form action={actionFunction}>
+          <input type="hidden" name="id" value={item.id} />
+          <label className="kicker mb-1 block">Category</label>
+          <select name="category" className="paper-select">
+            <option value="">Select</option>
+            {CATEGORY_OPTIONS.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
 
-              <div className="mb-6">
-                <p className="text-xs uppercase tracking-widest text-gray-400 mb-2">Category</p>
-                <input
-                  type="text"
-                  name="category"
-                  placeholder="e.g. Electronics, Clothing..."
-                  className="w-full border-b border-gray-300 text-sm text-gray-800 outline-none bg-transparent placeholder-gray-300 pb-1"
-                />
-              </div>
+          <div className="mt-4 flex gap-2">
+            <button type="submit" disabled={isPending} className="paper-button">
+              {isPending ? "Processing..." : "Confirm"}
+            </button>
+            <button type="button" onClick={onClose} className="paper-button paper-button--secondary">
+              Cancel
+            </button>
+          </div>
 
-              <div className="flex gap-3">
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="bg-green-600 hover:bg-green-700 text-white text-xs tracking-widest uppercase px-6 py-2 transition-colors"
-                >
-                  {isPending ? 'Processing...' : 'Confirm'}
-                </button>
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="text-xs uppercase tracking-widest text-gray-400 border border-gray-200 hover:bg-gray-50 px-6 py-2 transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-              {state?.message && (
-                <p className="text-xs text-gray-400 mt-4">{state.message}</p>
-              )}
-            </form>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  )
-}
+          {state?.message && (
+            <div className="mt-3 text-[11px] text-[var(--color-ink-light)]" style={{ fontFamily: "var(--font-jetbrains)" }}>
+              {state.message}
+            </div>
+          )}
+        </form>
+      </div>
+    </div>
+  );
+};
 
-export default PurchaseModal
+export default PurchaseModal;

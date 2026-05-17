@@ -1,124 +1,74 @@
-'use client'
+"use client";
 
-import { ExpenseFormState } from "@/types"
+import { CATEGORY_OPTIONS } from "@/lib/editorial";
+import { ExpenseFormState } from "@/types";
 
-export function ExpenseForm({ state, actionFunction, isPending }: { 
-  state: ExpenseFormState
-  actionFunction: (payload: FormData) => void
-  isPending: boolean 
-}) {  return (
-    <div className="px-8 md:px-24 py-16 bg-white border-t border-gray-100">
+export function ExpenseForm({
+  state,
+  actionFunction,
+  isPending,
+}: {
+  state: ExpenseFormState;
+  actionFunction: (payload: FormData) => void;
+  isPending: boolean;
+}) {
+  return (
+    <section id="file-report" className="section-enter py-5" style={{ animationDelay: "300ms" }}>
+      <div className="kicker mb-1">File a Report · New Expense</div>
+      <hr className="rule-thick mb-3" />
 
-      {/* Section header */}
-      <div className="mb-10">
-        <p className="text-xs uppercase tracking-[0.3em] text-green-700 font-medium mb-3">
-          New Entry
-        </p>
-        <h2 className="text-4xl font-light text-gray-900">
-          Add an <span className="text-green-800 italic">expense</span>
-        </h2>
-        <div className="w-12 h-px bg-green-800 mt-5" />
-      </div>
-
-      <form action={actionFunction} className="max-w-2xl space-y-5">
-
-        {/* Feedback messages */}
+      <form action={actionFunction} className="flex max-w-[560px] flex-col gap-3">
         {state?.success && (
-          <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-100 rounded-xl">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-600" />
-            <p className="text-green-700 text-sm">{state.message}</p>
+          <div className="border border-[var(--color-ink)] bg-[var(--color-paper-tint)] px-3 py-2 text-[12px]" style={{ fontFamily: "var(--font-jetbrains)" }}>
+            {state.message}
           </div>
         )}
         {state?.error && (
-          <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-100 rounded-xl">
-            <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
-            <p className="text-red-600 text-sm">{state.error}</p>
+          <div className="border border-[var(--color-accent)] bg-[var(--color-accent-bg)] px-3 py-2 text-[12px] text-[var(--color-accent)]" style={{ fontFamily: "var(--font-jetbrains)" }}>
+            {state.error}
           </div>
         )}
 
-        {/* Amount + Category row */}
-        <div className="flex gap-4">
-          <div className="flex-1">
-            <label className="block text-xs uppercase tracking-widest text-gray-400 mb-2">
-              Amount
-            </label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">
-                Rs
-              </span>
-              <input
-                type="number"
-                name="amount"
-                placeholder="0.00"
-                step="0.01"
-                required
-                className="w-full pl-10 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-300 focus:outline-none focus:border-green-500 focus:bg-white transition-all text-sm"
-              />
-            </div>
+        <div>
+          <label className="kicker mb-1 block">Description</label>
+          <input
+            type="text"
+            name="description"
+            placeholder="What did you spend on?"
+            required
+            className="paper-input"
+            style={{ fontFamily: "var(--font-im-fell)" }}
+          />
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-2">
+          <div>
+            <label className="kicker mb-1 block">Amount (रू)</label>
+            <input type="number" name="amount" placeholder="0" required className="paper-input" style={{ fontFamily: "var(--font-jetbrains)" }} />
           </div>
 
-          <div className="flex-1">
-            <label className="block text-xs uppercase tracking-widest text-gray-400 mb-2">
-              Category
-            </label>
-            <select
-              name="category"
-              required
-              className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:border-green-500 focus:bg-white transition-all text-sm appearance-none"
-            >
-              <option value="">Select...</option>
-              <option value="Food">Food</option>
-              <option value="Transport">Transport</option>
-              <option value="Entertainment">Entertainment</option>
-              <option value="Savings">Savings</option>
-              <option value="Essentials">Essentials</option>
+          <div>
+            <label className="kicker mb-1 block">Category</label>
+            <select name="category" required className="paper-select">
+              <option value="">Select</option>
+              {CATEGORY_OPTIONS.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
             </select>
           </div>
         </div>
 
-        {/* Description */}
         <div>
-          <label className="block text-xs uppercase tracking-widest text-gray-400 mb-2">
-            Description
-          </label>
-          <input
-            type="text"
-            name="description"
-            placeholder="What was this for?"
-            required
-            className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-300 focus:outline-none focus:border-green-500 focus:bg-white transition-all text-sm"
-          />
+          <label className="kicker mb-1 block">Date</label>
+          <input type="date" name="date" required className="paper-input" style={{ fontFamily: "var(--font-jetbrains)" }} />
         </div>
 
-        {/* Date */}
-        <div>
-          <label className="block text-xs uppercase tracking-widest text-gray-400 mb-2">
-            Date
-          </label>
-          <input
-            type="date"
-            name="date"
-            required
-            className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:border-green-500 focus:bg-white transition-all text-sm"
-          />
-        </div>
-
-        {/* Submit */}
-        <button
-          type="submit"
-          disabled={isPending}
-          className="w-full py-4 bg-green-800 text-white text-sm uppercase tracking-[0.2em] rounded-xl hover:bg-green-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 font-medium"
-        >
-          {isPending ? (
-            <span className="flex items-center justify-center gap-3">
-              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              Recording...
-            </span>
-          ) : (
-            'Record Expense'
-          )}
+        <button type="submit" disabled={isPending} className="paper-button mt-1 w-full">
+          {isPending ? "Filing..." : "Submit Report"}
         </button>
       </form>
-    </div>
-  )
+    </section>
+  );
 }

@@ -1,44 +1,61 @@
-'use client'
+"use client";
 
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { formatCurrency } from "@/lib/editorial";
+
 type MonthlyData = {
-  month: string
-  amount: number
-}
-const TinyBarChart = ({ monthlyData }: { monthlyData: MonthlyData[] }) => {
+  label: string;
+  abbr: string;
+  amount: number;
+  isCurrent: boolean;
+};
+
+const CustomBarTooltip = ({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: Array<{ value: number }>;
+  label?: string;
+}) => {
+  if (!active || !payload?.length) return null;
+
   return (
-    <div style={{ width: '100%', height: '300px' }}>
+    <div className="border border-[var(--color-ink)] bg-white px-2.5 py-1.5 text-[11px]" style={{ fontFamily: "var(--font-jetbrains)" }}>
+      <div className="font-bold text-[var(--color-ink)]">{label}</div>
+      <div className="text-[var(--color-ink)]">{formatCurrency(payload[0].value)}</div>
+    </div>
+  );
+};
+
+const Barchart = ({ monthlyData }: { monthlyData: MonthlyData[] }) => {
+  return (
+    <div className="h-[260px] w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={monthlyData}
-          margin={{ top: 10, right: 30, left: 20, bottom: 0 }}
-          barSize={40}
-        >
+        <BarChart data={monthlyData} margin={{ top: 18, right: 10, left: -22, bottom: 8 }}>
           <XAxis
-            dataKey="month"
-            axisLine={false}
+            dataKey="abbr"
             tickLine={false}
-            tick={{ fill: '#9ca3af', fontSize: 12 }}
+            axisLine={{ stroke: "#111111", strokeWidth: 2 }}
+            tick={{ fill: "#555555", fontSize: 10, fontFamily: "var(--font-jetbrains)" }}
           />
           <YAxis
-            axisLine={false}
             tickLine={false}
-            tick={{ fill: '#9ca3af', fontSize: 12 }}
-            tickFormatter={(value) => `Rs ${value}`}
+            axisLine={{ stroke: "#111111", strokeWidth: 2 }}
+            tick={{ fill: "#777777", fontSize: 9, fontFamily: "var(--font-jetbrains)" }}
+            tickFormatter={(value) => `${Math.round(value / 1000)}k`}
           />
-          <Tooltip
-            cursor={{ fill: '#f0fdf4' }}
-            contentStyle={{
-              border: '1px solid #e5e7eb',
-              borderRadius: '12px',
-            }}
-            formatter={(value) => [`Rs ${value}`, 'Amount']}
-          />
-          <Bar dataKey="amount" radius={[6, 6, 0, 0]} fill="#16a34a" />
+          <Tooltip cursor={false} content={<CustomBarTooltip />} />
+          <Bar dataKey="amount" maxBarSize={40}>
+            {monthlyData.map((entry) => (
+              <Cell key={entry.label} fill={entry.isCurrent ? "#C0392B" : "#111111"} />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
-  )
-}
+  );
+};
 
-export default TinyBarChart
+export default Barchart;

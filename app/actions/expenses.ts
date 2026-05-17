@@ -104,7 +104,7 @@ export async function deleteExpense(prevState: unknown, formData: FormData) {
       message: "Expense deleted successfully!",
       deletedExpense,
     };
-  } catch (err) {
+  } catch {
     return {
       success: false,
       error: "Failed to delete expense",

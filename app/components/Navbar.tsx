@@ -1,53 +1,64 @@
-import React from "react";
-import { Plus } from "lucide-react";
 import { logout } from "../actions/auth";
-const Navbar = () => {
-  const handleLogout = async () => {
-    await logout();
-  };
+
+type NavbarProps = {
+  title?: string;
+  activePage: "front" | "desk";
+  onNavigate: (page: "front" | "desk") => void;
+};
+
+const Navbar = ({
+  title = "को हिसाब",
+  activePage,
+  onNavigate,
+}: NavbarProps) => {
   return (
-    <header className="border-b border-gray-300 bg-white  text-gray-800 sticky top-0 z-40">
-      <div className="max-w-7xl mx-auto px-4 py-5 lg:px-8 flex items-center justify-between">
-        <a href='#hero' className="space-y-0">
-          <h1 className="text-2xl font-light tracking-tight ">Expenses</h1>
-          <p className="text-xs text-muted-foreground mt-1">
-            Track your spending mindfully
-          </p>
-        </a>
-        <div className="flex gap-10 items-center">
-          <a
-            href="#analytics"
-            className="text-xs uppercase tracking-widest text-gray-500 hover:text-green-800 transition-colors"
-          >
-            Overview
-          </a>
-          <a
-            href="#budget"
-            className="text-xs uppercase tracking-widest text-gray-500 hover:text-green-800 transition-colors"
-          >
-            Budget
-          </a>
-          <a
-            href="#transactions"
-            className="text-xs uppercase tracking-widest text-gray-500 hover:text-green-800 transition-colors"
-          >
-            Transactions
-          </a>
-          <a
-            href="#add-expense"
-            className="text-xs uppercase flex items-center gap-2 tracking-widest text-white bg-green-800 hover:bg-green-700 px-4 py-2 rounded-lg transition-colors"
-          >
-            <Plus /> Add
-          </a>
+    <nav className="sticky top-0 z-20 border-b border-[var(--color-ink)] bg-white px-4 py-2 md:px-6">
+      <div className="mx-auto flex max-w-[900px] items-center justify-between gap-4">
+        <button
+          type="button"
+          onClick={() => onNavigate("front")}
+          className="text-[14px] font-black text-[var(--color-ink)]"
+          style={{ fontFamily: "var(--font-playfair)" }}
+        >
+          {title}
+        </button>
+
+        <div className="flex flex-wrap items-center justify-end gap-3 md:gap-6">
           <button
-            onClick={handleLogout}
-            className="gap-2 flex items-center border bg-gray-50 cursor-pointer border-gray-300 p-2 rounded-lg"
+            type="button"
+            onClick={() => onNavigate("front")}
+            className={`kicker ${
+              activePage === "front"
+                ? "text-[var(--color-accent)]"
+                : "hover:text-[var(--color-accent)]"
+            }`}
           >
-            <span className="hidden sm:inline">Logout</span>
+            Front Page
           </button>
+
+          <button
+            type="button"
+            onClick={() => onNavigate("desk")}
+            className={`kicker ${
+              activePage === "desk"
+                ? "text-[var(--color-accent)]"
+                : "hover:text-[var(--color-accent)]"
+            }`}
+          >
+            Financial Desk
+          </button>
+
+          <form action={logout}>
+            <button
+              type="submit"
+              className="kicker border border-[var(--color-ink)] px-2.5 py-1 hover:bg-[var(--color-ink)] hover:text-white"
+            >
+              Log Out
+            </button>
+          </form>
         </div>
       </div>
-    </header>
+    </nav>
   );
 };
 
