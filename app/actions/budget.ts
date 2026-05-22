@@ -37,7 +37,7 @@ export async function setBudget(prevState:unknown, formData:FormData) {
     };
   }
 }
-export async function getBudget() {
+export async function getBudget(referenceDate:Date = new Date()) {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("jwt_token")?.value;
@@ -47,7 +47,7 @@ export async function getBudget() {
       return null;
     }
     const userId = payload.userId;
-    const {month,year}= getNepaliMonthAndYear(new Date())
+    const {month,year}= getNepaliMonthAndYear(referenceDate)
 
     const budget = await prisma.budget.findUnique({
       where:{userId_month_year: 

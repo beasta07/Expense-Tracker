@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { logout } from "../actions/auth";
 
 type NavbarProps = {
@@ -11,13 +12,28 @@ const Navbar = ({
   activePage,
   onNavigate,
 }: NavbarProps) => {
+  const [isScrolled,setIsScrolled]=useState(false);
+ 
+  useEffect(()=>{
+    const handleScroll = ()=>{
+      setIsScrolled(window.scrollY>0)
+    }
+    window.addEventListener('scroll',handleScroll)
+
+    handleScroll()
+
+    return()=> window.removeEventListener('scroll',handleScroll)
+  },)
+  
+   
   return (
-    <nav className="sticky top-0 z-20 border-b border-[var(--color-ink)] bg-white px-4 py-2 md:px-6">
-      <div className="mx-auto flex max-w-[900px] items-center justify-between gap-4">
+    <nav className={`sticky z-20 border-b border-foreground bg-white ${isScrolled ? 'top-0':'top-10'}` }>
+
+      <div className="mx-auto flex max-w-225 px-4  md:px-6 py-2 items-center justify-between gap-4">
         <button
           type="button"
           onClick={() => onNavigate("front")}
-          className="text-[14px] font-black text-[var(--color-ink)]"
+          className="text-[14px] font-black text-foreground"
           style={{ fontFamily: "var(--font-playfair)" }}
         >
           {title}
@@ -29,8 +45,8 @@ const Navbar = ({
             onClick={() => onNavigate("front")}
             className={`kicker ${
               activePage === "front"
-                ? "text-[var(--color-accent)]"
-                : "hover:text-[var(--color-accent)]"
+                ? "text-(--color-accent)"
+                : "hover:text-(--color-accent)"
             }`}
           >
             Front Page
@@ -41,8 +57,8 @@ const Navbar = ({
             onClick={() => onNavigate("desk")}
             className={`kicker ${
               activePage === "desk"
-                ? "text-[var(--color-accent)]"
-                : "hover:text-[var(--color-accent)]"
+                ? "text-(--color-accent)"
+                : "hover:text-(--color-accent)"
             }`}
           >
             Financial Desk

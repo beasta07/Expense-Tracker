@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getWishlistItems } from "../actions/wishlist";
 
-const useWishlist = (wishlistState: unknown, refreshTrigger: number) => {
+const useWishlist = ( refreshTrigger: unknown) => {
     type WishlistItem = {
   id: number
   name: string
@@ -25,7 +25,7 @@ const [wishlistData, setWishlistData] = useState<WishlistItem[] | null>(null)
       }
     };
     fetchData();
-  }, [wishlistState, refreshTrigger]);
+  }, [ refreshTrigger]);
   return { wishlistData, loading, errors };
 };
 

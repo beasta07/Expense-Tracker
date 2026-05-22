@@ -14,7 +14,20 @@ export const BS_MONTH_ABBR = [
   "Fal",
   "Cha",
 ] as const;
-
+export const BS_MONTH_NAMES = [
+  "Baisakh",
+  "Jestha",
+  "Asar",
+  "Shrawan",
+  "Bhadra",
+  "Aswin",
+  "Kartik",
+  "Mangsir",
+  "Poush",
+  "Magh",
+  "Falgun",
+  "Chaitra",
+] as const;
 export type NepaliDateParts = {
   month: number;
   year: number;

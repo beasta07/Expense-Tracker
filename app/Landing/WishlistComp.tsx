@@ -1,27 +1,35 @@
 "use client";
 
-import { useActionState, useState } from "react";
-import { addWishlistItem, removeWishlistItem } from "../actions/wishlist";
-import useWishlist from "../hooks/useWishlist";
+import { useState } from "react";
+import {  removeWishlistItem } from "../actions/wishlist";;
 import PurchaseModal from "../components/Model/Wishlist/PurchaseModal";
 import { WishlistItem } from "@/types";
 
-const WishlistComp = ({
-  onExpenseRefresh,
-}: {
+type Props = {
   onExpenseRefresh: () => void;
-}) => {
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  wishlistFormState: { success: boolean; message: string; data?: { name: string; price: string; userId: number } } | null;
+  wishlistAction: (payload: FormData) => void;
+  wishlistPending: boolean;
+  wishlistData: WishlistItem[] | null;
+  wishlistLoading: boolean;
+wishlistErrors: Error | null;
+  setWishlistRefresh: React.Dispatch<React.SetStateAction<number>>;
+}
+
+const WishlistComp = ({
+  onExpenseRefresh,wishlistFormState,wishlistAction,wishlistPending,wishlistData,setWishlistRefresh,wishlistLoading
+}: 
+ Props
+) => {
   const [formOpen, setFormOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<WishlistItem | null>(null);
-  const [wishlistState, actionFunction, isPending] = useActionState(addWishlistItem, null);
-  const { wishlistData, loading } = useWishlist(wishlistState, refreshTrigger);
+  
 
   const items = wishlistData ?? [];
   const totalWishlistValue = items.reduce((sum, item) => sum + item.price, 0);
 
   const handleRefresh = () => {
-    setRefreshTrigger((prev) => prev + 1);
+    setWishlistRefresh((prev) => prev + 1);
   };
 
    
@@ -51,7 +59,7 @@ const WishlistComp = ({
       </button>
 
       {formOpen && (
-        <form action={actionFunction} className="mb-3 border border-[var(--color-ink)] bg-[var(--color-paper-tint)] p-2.5">
+        <form action={wishlistAction} className="mb-3 border border-[var(--color-ink)] bg-[var(--color-paper-tint)] p-2.5">
           <div className="mb-2">
             <label className="kicker mb-1 block">Item Name</label>
             <input type="text" name="name" className="paper-input" />
@@ -60,18 +68,18 @@ const WishlistComp = ({
             <label className="kicker mb-1 block">Price</label>
             <input type="number" name="price" className="paper-input" style={{ fontFamily: "var(--font-jetbrains)" }} />
           </div>
-          <button type="submit" disabled={isPending} className="paper-button mt-2 w-full">
-            {isPending ? "Saving..." : "Save Item"}
+          <button type="submit" disabled={wishlistPending} className="paper-button mt-2 w-full">
+            {wishlistPending ? "Saving..." : "Save Item"}
           </button>
-          {wishlistState?.message && (
+          {wishlistFormState?.message && (
             <div className="mt-2 text-[11px] text-[var(--color-ink-light)]" style={{ fontFamily: "var(--font-jetbrains)" }}>
-              {wishlistState.message}
+              {wishlistFormState.message}
             </div>
           )}
         </form>
       )}
 
-      {loading ? (
+      {wishlistLoading ? (
         <div className="text-[11px] text-[var(--color-ink-light)]" style={{ fontFamily: "var(--font-jetbrains)" }}>
           Loading committee notes...
         </div>

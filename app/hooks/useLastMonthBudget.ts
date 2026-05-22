@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getBudget } from "../actions/budget";
 
-const useBudget = (postState: unknown) => {
+const useLastMonthBudget = (postState: unknown) => {
   const [budgetState, setBudgetState] = useState<{
     id: number;
     month: number;
@@ -14,7 +14,11 @@ const useBudget = (postState: unknown) => {
   useEffect(() => {
     const fetchBudget = async () => {
       try {
-        const result = await getBudget();
+       const lastMonthDate = new Date()
+       lastMonthDate.setMonth(lastMonthDate.getMonth()-1)
+
+
+        const result = await getBudget(lastMonthDate);
         console.log(result, "getBudget result");
         if (result) setBudgetState(result.budget ?? null);
       } catch (err) {
@@ -29,4 +33,4 @@ const useBudget = (postState: unknown) => {
   return { budgetState, error, budgetStateLoading };
 };
 
-export default useBudget;
+export default useLastMonthBudget;
