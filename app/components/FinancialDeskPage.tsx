@@ -1,6 +1,6 @@
 "use client";
 
-import { WishlistItem } from "@prisma/client";
+import { WishlistItem } from "@/types";
 import { useState, useRef, useEffect } from "react";
 
 type Message = {
