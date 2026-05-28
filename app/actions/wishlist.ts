@@ -1,4 +1,5 @@
 "use server";
+import { Prisma } from "@prisma/client";
 
 import { verifyToken } from "@/lib/jwt";
 import prisma from "@/lib/prisma";
@@ -97,7 +98,7 @@ export async function purchaseWishlistItem(prevState:unknown, formData:FormData)
     const amount = items.price;
     const description = items.name;
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       await tx.expense.create({
         data: {
           amount,
