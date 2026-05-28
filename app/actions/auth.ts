@@ -85,52 +85,45 @@ export async function signUp(prevData:unknown , formData:FormData) {
     };
   }
 }
-export async function logIn(prevData:unknown , formData:FormData) {
+export async function logIn(prevData: unknown, formData: FormData) {
   try {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-    //Checking if email and passwor is entered by the user
+
     if (!email || !password) {
       return {
         success: false,
         error: "Both emails and password are required.",
       };
     }
-    //Hash password
 
-    //Checking email exists from database
     const userExists = await prisma.user.findUnique({
-      where: {
-        email: email,
-      },
+      where: { email },
     });
-    //Checking if the entered passwrod is correct
 
-    //If user doesn't exist
     if (!userExists) {
       return {
         success: false,
         error: "Email or Password is incorrect",
       };
     }
+
+    if (!userExists.password) {
+      return {
+        success: false,
+        error: "This account uses Google login. Please sign in with Google.",
+      };
+    }
+
     if (!(await verifyFunction(password, userExists.password))) {
       return {
         success: false,
         error: "Email or Password is incorrect",
       };
     }
-    if (!userExists.password) {
-  return {
-    success: false,
-    error: "This account uses Google login. Please sign in with Google.",
-  };
-}
-if (!(await verifyFunction(password, userExists.password))) {
 
-    // CREATE A TOKEN
-    const token =await createToken(userExists.id);
+    const token = await createToken(userExists.id);
 
-    //STORE SESSION IN DATABASE
     await prisma.session.create({
       data: {
         userId: userExists.id,
@@ -138,16 +131,17 @@ if (!(await verifyFunction(password, userExists.password))) {
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
       },
     });
+
     const cookieStore = await cookies();
     cookieStore.set("jwt_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24, // 24 hours in seconds
+      maxAge: 60 * 60 * 24,
     });
+
     return {
       success: true,
-
       user: {
         id: userExists.id,
         email: userExists.email,
