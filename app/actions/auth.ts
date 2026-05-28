@@ -155,23 +155,14 @@ export async function logIn(prevData: unknown, formData: FormData) {
 }
 export async function logout() {
   try {
-     const cookieStore =await cookies()
-    const token = cookieStore.get('jwt_token')?.value
+    const cookieStore = await cookies();
+    const token = cookieStore.get("jwt_token")?.value;
     await prisma.session.deleteMany({
-      where: {
-        token: token,
-      },
+      where: { token },
     });
-    cookieStore.delete('jwt_token')
-
-   
-
+    cookieStore.delete("jwt_token");
   } catch (err) {
-    return {
-      success: false,
-      message: err,
-    };
+    console.error("Logout error", err);
   }
-      redirect('/login')
-
+  redirect("/login");
 }
