@@ -12,7 +12,7 @@ export async function GET(request: Request) {
       code,
       client_id: process.env.GOOGLE_CLIENT_ID,
       client_secret: process.env.GOOGLE_CLIENT_SECRET,
-      redirect_uri: "http://localhost:3000/api/auth/callback/google",
+      redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback/google`,
       grant_type: "authorization_code",
     }),
   });
@@ -49,7 +49,6 @@ export async function GET(request: Request) {
       maxAge: 60 * 60 * 24,
     });
     return Response.redirect(new URL("/", request.url));
-
   } else {
     const emailExists = await prisma.user.findUnique({
       where: { email },
@@ -76,7 +75,6 @@ export async function GET(request: Request) {
         maxAge: 60 * 60 * 24,
       });
       return Response.redirect(new URL("/", request.url));
-
     } else {
       const user = await prisma.user.create({
         data: {
