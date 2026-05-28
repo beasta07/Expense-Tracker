@@ -115,6 +115,7 @@ const Home = () => {
               dailyAverage={dailyAverage}
               transactionCount={currentMonthExpenses.length}
               categories={monthlyCategories}
+              loading={loading} // from useExpenses
               sidebar={
                 <WishlistComp
                   wishlistFormState={wishlistFormState}
@@ -123,6 +124,7 @@ const Home = () => {
                   wishlistLoading={wishlistLoading}
                   wishlistData={wishlistData}
                   wishlistErrors={wishlistErrors}
+                   onNavigate={setActivePage}
                   setWishlistRefresh={setWishlistRefresh}
                   onExpenseRefresh={() => setExpenseRefresh((prev) => prev + 1)}
                 />
@@ -136,7 +138,7 @@ const Home = () => {
               categoryExpenses={currentMonthExpenses}
             />
             <hr className="rule-double my-5" />
-            <SaulClassifiedAd />
+            <SaulClassifiedAd onNavigate={setActivePage} />
             <hr className="rule-double my-5" />
 
             <BudgetComp
@@ -186,7 +188,7 @@ const Home = () => {
             budgetState={budgetState}
             lastMonthBudgetState={lastMonthBudgetState}
             wishlistData={wishlistData}
-            />
+          />
         )}
       </NewspaperPageTurn>
     </section>

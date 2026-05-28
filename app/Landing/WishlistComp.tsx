@@ -14,10 +14,11 @@ type Props = {
   wishlistLoading: boolean;
 wishlistErrors: Error | null;
   setWishlistRefresh: React.Dispatch<React.SetStateAction<number>>;
+   onNavigate: (page: "front" | "desk") => void 
 }
 
 const WishlistComp = ({
-  onExpenseRefresh,wishlistFormState,wishlistAction,wishlistPending,wishlistData,setWishlistRefresh,wishlistLoading
+  onExpenseRefresh,wishlistFormState,wishlistAction,wishlistPending,wishlistData,setWishlistRefresh,wishlistLoading,onNavigate
 }: 
  Props
 ) => {
@@ -79,11 +80,22 @@ const WishlistComp = ({
         </form>
       )}
 
-      {wishlistLoading ? (
-        <div className="text-[11px] text-[var(--color-ink-light)]" style={{ fontFamily: "var(--font-jetbrains)" }}>
-          Loading committee notes...
+   {wishlistLoading ? (
+  <div className="flex flex-col gap-2">
+    {[1, 2, 3].map((i) => (
+      <div key={i} className="border-t border-[var(--color-rule-light)] py-2">
+        <div className="animate-pulse bg-gray-200 mb-1.5" style={{ width: "65%", height: "14px" }} />
+        <div className="flex items-center justify-between gap-2">
+          <div className="animate-pulse bg-gray-200" style={{ width: "40%", height: "11px" }} />
+          <div className="flex gap-2">
+            <div className="animate-pulse bg-gray-200" style={{ width: "55px", height: "11px" }} />
+            <div className="animate-pulse bg-gray-200" style={{ width: "40px", height: "11px" }} />
+          </div>
         </div>
-      ) : items.length === 0 ? (
+      </div>
+    ))}
+  </div>
+) : items.length === 0 ? (
         <div className="border-t border-[var(--color-rule-light)] py-2 text-[12px] text-[var(--color-ink-mid)]" style={{ fontFamily: "var(--font-im-fell)" }}>
           No pending acquisitions are listed in the current edition.
         </div>
@@ -107,29 +119,30 @@ const WishlistComp = ({
           </div>
         ))
       )}
+<div className="mt-3">
+  <hr className="rule-standard mb-2" />
+  <div style={{ borderTop: "2px solid var(--color-ink)", borderBottom: "1px solid var(--color-ink)" }} className="mb-1.5 py-[2px]">
+    <span className="kicker">Ask the Desk</span>
+  </div>
 
-      <div className="mt-4">
-        <hr className="rule-standard mb-2" />
-        <div className="kicker mb-1.5">Ask the Financial Desk</div>
-        <div className="border border-[var(--color-ink)] bg-[var(--color-paper-tint)] p-2">
-          <div className="mb-1.5 text-[12px] italic text-[var(--color-ink-mid)]" style={{ fontFamily: "var(--font-im-fell)" }}>
-            &quot;Where did my money go this month?&quot;
-          </div>
-          <div className="flex items-center gap-1.5">
-            <input
-              type="text"
-              placeholder="Ask anything about your finances..."
-              className="flex-1 border border-[var(--color-ink-ghost)] px-2 py-1 text-[12px] bg-white"
-              style={{ fontFamily: "var(--font-jetbrains)" }}
-              disabled
-            />
+  <div className="border border-[var(--color-ink)] bg-[var(--color-paper-tint)] p-2">
+    <div className="mb-2 text-[11px] italic text-[var(--color-ink-mid)]" style={{ fontFamily: "var(--font-im-fell)", lineHeight: 1.5 }}>
+      He has seen your numbers. He has questions.
+    </div>
+    <button
+      type="button"
+      onClick={() => onNavigate("desk")}
+      className="w-full border border-[var(--color-ink)] bg-[var(--color-ink)] px-2 py-1.5 text-[8px] uppercase text-white hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)]"
+      style={{ fontFamily: "var(--font-jetbrains)", letterSpacing: "2px" }}
+    >
+      → Face the Music
+    </button>
+  </div>
 
-            <button type="button" className="border border-[var(--color-accent)] bg-[var(--color-accent)] px-2 py-1 text-[10px] font-bold uppercase text-white" style={{ fontFamily: "var(--font-jetbrains)", letterSpacing: "2px" }} disabled>
-              Soon
-            </button>
-          </div>
-        </div>
-      </div>
+  <div className="mt-1 text-center text-[7px] uppercase tracking-widest text-[var(--color-ink-light)]" style={{ fontFamily: "var(--font-jetbrains)" }}>
+    Intern not liable for your choices
+  </div>
+</div>
 
       {selectedItem && (
         <PurchaseModal

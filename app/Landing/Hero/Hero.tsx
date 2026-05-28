@@ -12,7 +12,15 @@ type HeroProps = {
   transactionCount: number;
   categories: Array<{ name: string; amount: number; percentage: number }>;
   sidebar: React.ReactNode;
+  loading?: boolean;
 };
+
+const SkeletonBlock = ({ w = "100%", h = "16px" }: { w?: string; h?: string }) => (
+  <div
+    className="animate-pulse bg-gray-200"
+    style={{ width: w, height: h }}
+  />
+);
 
 const Hero = ({
   userName,
@@ -24,6 +32,7 @@ const Hero = ({
   transactionCount,
   categories,
   sidebar,
+  loading = false,
 }: HeroProps) => {
   const budgetDifference = budgetAmount == null ? null : budgetAmount - currentSpent;
   const statCells = [
@@ -82,6 +91,7 @@ const Hero = ({
       <hr className="rule-thick mb-[2px]" />
       <hr className="rule-standard mb-5" />
 
+      {/* Stat cells */}
       <div className="mb-5 grid grid-cols-2 border border-[var(--color-ink)] md:grid-cols-4">
         {statCells.map((cell, index) => (
           <div
@@ -89,13 +99,24 @@ const Hero = ({
             className={`p-3 ${index < statCells.length - 1 ? "border-b border-[var(--color-ink)] md:border-b-0 md:border-r" : ""}`}
           >
             <div className="kicker mb-1">{cell.label}</div>
-            <div className="stat-number">{cell.value}</div>
-            <div
-              className={`mt-0.5 text-[11px] ${cell.subAlert ? "text-[var(--color-accent)]" : "text-[var(--color-ink-light)]"}`}
-              style={{ fontFamily: "var(--font-jetbrains)" }}
-            >
-              {cell.sub}
-            </div>
+            {loading ? (
+              <>
+                <SkeletonBlock w="70%" h="22px" />
+                <div className="mt-1.5">
+                  <SkeletonBlock w="90%" h="12px" />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="stat-number">{cell.value}</div>
+                <div
+                  className={`mt-0.5 text-[11px] ${cell.subAlert ? "text-[var(--color-accent)]" : "text-[var(--color-ink-light)]"}`}
+                  style={{ fontFamily: "var(--font-jetbrains)" }}
+                >
+                  {cell.sub}
+                </div>
+              </>
+            )}
           </div>
         ))}
       </div>
@@ -106,49 +127,70 @@ const Hero = ({
         <div className="pr-0 md:pr-5">
           <div className="kicker mb-1">Top Story · Spending Report</div>
           <hr className="rule-thick mb-3" />
-          <h2 className="headline text-[28px] md:text-[32px]">{headline}</h2>
-          <div className="byline mt-2">By {userName} · Expense Correspondent</div>
-          <p className="body-copy mt-3">{body}</p>
 
-          <div className="mt-3 border border-[var(--color-ink)] p-2.5">
-            <div className="kicker mb-1.5">Category Breakdown</div>
-            {categories.length === 0 ? (
-              <p className="body-copy">No category reports have been filed for this month yet.</p>
-            ) : (
-              categories.map((cat) => {
-                const isAlert = cat === categories[0] && cat.percentage > 35;
-                return (
-                  <div key={cat.name} className="mb-1.5 flex items-center gap-2">
-                    <span className="min-w-[90px] text-[12px] text-[var(--color-ink-mid)]" style={{ fontFamily: "var(--font-jetbrains)" }}>
-                      {cat.name}
-                    </span>
-                    <div className="h-[14px] flex-1 bg-[#eeeeee]">
-                      <div
-                        className="h-full"
-                        style={{
-                          width: `${cat.percentage}%`,
-                          background: isAlert ? "var(--color-accent)" : "var(--color-ink)",
-                        }}
-                      />
-                    </div>
-                    <span
-                      className="min-w-[36px] text-right text-[12px] font-bold"
-                      style={{
-                        color: isAlert ? "var(--color-accent)" : "var(--color-ink)",
-                        fontFamily: "var(--font-jetbrains)",
-                      }}
-                    >
-                      {cat.percentage}%
-                    </span>
+          {loading ? (
+            <div className="flex flex-col gap-3">
+              <SkeletonBlock w="85%" h="32px" />
+              <SkeletonBlock w="40%" h="12px" />
+              <SkeletonBlock w="100%" h="14px" />
+              <SkeletonBlock w="100%" h="14px" />
+              <SkeletonBlock w="75%" h="14px" />
+              <div className="mt-3 border border-[var(--color-ink)] p-2.5">
+                <div className="kicker mb-1.5">Category Breakdown</div>
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="mb-1.5 flex items-center gap-2">
+                    <SkeletonBlock w="90px" h="12px" />
+                    <SkeletonBlock w="100%" h="14px" />
+                    <SkeletonBlock w="36px" h="12px" />
                   </div>
-                );
-              })
-            )}
-          </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <>
+              <h2 className="headline text-[28px] md:text-[32px]">{headline}</h2>
+              <div className="byline mt-2">By {userName} · Expense Correspondent</div>
+              <p className="body-copy mt-3">{body}</p>
+              <div className="mt-3 border border-[var(--color-ink)] p-2.5">
+                <div className="kicker mb-1.5">Category Breakdown</div>
+                {categories.length === 0 ? (
+                  <p className="body-copy">No category reports have been filed for this month yet.</p>
+                ) : (
+                  categories.map((cat) => {
+                    const isAlert = cat === categories[0] && cat.percentage > 35;
+                    return (
+                      <div key={cat.name} className="mb-1.5 flex items-center gap-2">
+                        <span className="min-w-[90px] text-[12px] text-[var(--color-ink-mid)]" style={{ fontFamily: "var(--font-jetbrains)" }}>
+                          {cat.name}
+                        </span>
+                        <div className="h-[14px] flex-1 bg-[#eeeeee]">
+                          <div
+                            className="h-full"
+                            style={{
+                              width: `${cat.percentage}%`,
+                              background: isAlert ? "var(--color-accent)" : "var(--color-ink)",
+                            }}
+                          />
+                        </div>
+                        <span
+                          className="min-w-[36px] text-right text-[12px] font-bold"
+                          style={{
+                            color: isAlert ? "var(--color-accent)" : "var(--color-ink)",
+                            fontFamily: "var(--font-jetbrains)",
+                          }}
+                        >
+                          {cat.percentage}%
+                        </span>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </>
+          )}
         </div>
 
         <div className="hidden bg-[var(--color-ink)] md:block" />
-
         <div className="pl-0 md:pl-5">{sidebar}</div>
       </div>
     </section>

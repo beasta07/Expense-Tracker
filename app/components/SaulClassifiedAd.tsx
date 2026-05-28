@@ -1,7 +1,7 @@
 // components/SaulClassifiedAd.tsx
 import Image from "next/image";
 
-export default function SaulClassifiedAd() {
+export default function SaulClassifiedAd({ onNavigate }: { onNavigate: (page: "front" | "desk") => void }) {
   return (
     <div className="py-4">
       <div
@@ -58,6 +58,7 @@ export default function SaulClassifiedAd() {
           </p>
 
           <button
+            onClick={() => onNavigate("desk")}
             className="mt-auto text-center text-[11px] font-bold tracking-wider uppercase hover:text-white bg-[#c0392b] border-2 border-black px-4 py-2.5 hover:bg-black "
         
           >
