@@ -1,5 +1,4 @@
 "use server";
-import type { PrismaClient } from "@prisma/client";
 import { verifyToken } from "@/lib/jwt";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
@@ -97,7 +96,9 @@ export async function purchaseWishlistItem(prevState:unknown, formData:FormData)
     const amount = items.price;
     const description = items.name;
 
-await prisma.$transaction(async (tx: Omit<PrismaClient, "$connect" | "$disconnect" | "$on" | "$use" | "$extends">) => {      await tx.expense.create({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await prisma.$transaction(async (tx: any) => {
+      await tx.expense.create({
         data: {
           amount,
           description,
