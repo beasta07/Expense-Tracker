@@ -119,6 +119,13 @@ export async function logIn(prevData:unknown , formData:FormData) {
         error: "Email or Password is incorrect",
       };
     }
+    if (!userExists.password) {
+  return {
+    success: false,
+    error: "This account uses Google login. Please sign in with Google.",
+  };
+}
+if (!(await verifyFunction(password, userExists.password))) {
 
     // CREATE A TOKEN
     const token =await createToken(userExists.id);
