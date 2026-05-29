@@ -11,6 +11,8 @@ if (!connectionString) {
 
 const adapter = new PrismaPg({ 
   connectionString,
+    ssl: true
+
 })
 
 const prisma = new PrismaClient({ adapter })
